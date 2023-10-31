@@ -1,17 +1,50 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+
 public class Main {
+    private static Network network;
     public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
-
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
-
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
+    network = new Network(new double[][][] {
+        {
+            {5,-6},{-6,6} ,{-3}
+        },
+        { 
+            {10,10} , {-5}
         }
+},new double[]{0.0,1.0});
+network.PrintValues();
+    }
+    
+    
+    
+    
+    
+    public static double SigmoidSquish(double input) {
+        return 1/(1+ Math.exp(-input));
+    }
+    
+    public static double[] mult(double[][] m, double[]mm) {
+      
+        
+        double[] result = new double[m.length-1];
+        double bias = m[m.length-1][0];
+        //set result dimensions to outer dimensions of m and mm
+         for(int i = 0; i < m.length-1; i ++) {
+        for(int j = 0; j < m[0].length; j++) {
+          double sum = 0;
+          
+            for(int l = 0; l < mm.length; l++) {
+            sum+= m[i][j] * mm[l];
+            }
+            System.out.println("bias" + bias);
+            sum += bias; // add bias
+            //for every dimension in result, find the sum of the entire row of i multiplied with its corresponding term in the entire column of mm 
+          
+            result[i] = SigmoidSquish(sum);
+          
+         }  
+       }
+        return result;
+
+      
+
     }
 }
