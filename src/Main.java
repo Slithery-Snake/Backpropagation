@@ -1,8 +1,8 @@
-
+ 
 public class Main {
     private static Network network;
     public static void main(String[] args) {
-    network = new Network(new double[][][] {
+    /*network = new Network(new double[][][] {
         {
             {5,-6},{-6,6} ,{-3}
         },
@@ -10,7 +10,11 @@ public class Main {
             {10,10} , {-5}
         }
 },new double[]{0.0,1.0});
-network.PrintValues();
+network.PrintValues();*/
+
+    network = new Network(new double[]{0.0, 1.0}, new double[]{1.0},
+    new int[]{2}            );
+    network.PrintWeights();
     }
     
     
@@ -28,7 +32,7 @@ network.PrintValues();
         double bias = m[m.length-1][0];
         //set result dimensions to outer dimensions of m and mm
          for(int i = 0; i < m.length-1; i ++) {
-        for(int j = 0; j < m[0].length; j++) {
+        for(int j = 0; j < m[i].length; j++) {
           double sum = 0;
           
             for(int l = 0; l < mm.length; l++) {
