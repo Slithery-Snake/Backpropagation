@@ -13,8 +13,15 @@ public class Main {
 network.PrintValues();*/
 
     network = new Network(new double[]{0.0, 1.0}, new double[]{1.0},
-    new int[]{2}            );
-    network.PrintWeights();
+    new int[]{2} ,new double[][][] { /**/{{1,1},{0}},/**/{{0,0} ,{0} } ,/**/ {{1,0},{1}},/**/ {{0,1},{1}}  }           );
+    network.BackProp(0.7,0.3);
+    for(int i = 0; i < 4; i++){
+        network.SetDataSet(i);
+    network.CalculateNeuron();
+        network.PrintWeights();
+
+    network.PrintValues();
+}
     }
     
     
@@ -24,7 +31,6 @@ network.PrintValues();*/
     public static double SigmoidSquish(double input) {
         return 1/(1+ Math.exp(-input));
     }
-    
     public static double[] mult(double[][] m, double[]mm) {
       
         
@@ -38,11 +44,37 @@ network.PrintValues();*/
             for(int l = 0; l < mm.length; l++) {
             sum+= m[i][j] * mm[l];
             }
-            System.out.println("bias" + bias);
+            //System.out.println("bias" + bias);
             sum += bias; // add bias
             //for every dimension in result, find the sum of the entire row of i multiplied with its corresponding term in the entire column of mm 
           
             result[i] = SigmoidSquish(sum);
+          
+         }  
+       }
+        return result;
+
+      
+
+    }
+   
+    public static double[] multNonSquish(double[][] m, double[]mm) {
+      
+        
+        double[] result = new double[m.length-1];
+        double bias = m[m.length-1][0];
+        //set result dimensions to outer dimensions of m and mm
+         for(int i = 0; i < m.length-1; i ++) {
+        for(int j = 0; j < m[i].length; j++) {
+          double sum = 0;
+          
+            for(int l = 0; l < mm.length; l++) {
+            sum+= m[i][j] * mm[l];
+            }
+            //System.out.println("bias" + bias);
+            sum += bias; // add bias
+            //for every dimension in result, find the sum of the entire row of i multiplied with its corresponding term in the entire column of mm 
+          
           
          }  
        }
