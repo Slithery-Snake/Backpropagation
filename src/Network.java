@@ -16,6 +16,7 @@ public class Network {
     int finalLayer;
     double[] input;
     double[] desiredOutput;
+    double[][] sums;
 
     public Network(double[] input, double[] desiredOutput, int[] layerEtNeurons, double[][][] dataSet) //set, input, output
     {
@@ -29,6 +30,7 @@ public class Network {
             neuronValues[z] = new double[layerEtNeurons[z - 1]];
         }
         neuronValues[neuronValues.length - 1] = new double[desiredOutput.length];
+        sums = neuronValues.clone();
         finalLayer = neuronValues.length - 1;
         hiddenLayers = new double[neuronValues.length - 1][][]; // layers should include all but input
         gradientTemp = hiddenLayers.clone();
@@ -69,6 +71,7 @@ public class Network {
     public void SetDataSet(int set) {
 
         neuronValues[0] = dataSet[set][0];
+        sums[0] = neuronValues[0];
         desiredOutput = dataSet[set][1];
 
     }
@@ -120,65 +123,37 @@ public class Network {
     public void BackProp(double learnRate, double momentum) {
         double error = CalculateSumError();
         double[][][] prevChange = gradientTemp.clone();
+        double[][] nDeltas = sums.clone();
         System.out.println(("hel"));
 
-        while (error > 0.1) {
+        // while (error > 0.1)
+        {
             double[][][] gradients = gradientTemp.clone();
-
-            double gradientAvg = 0;
-            double gradientNum = 0;
-            // System.out.println("datalength " + dataSet.length);
 
             for (int q = 0; q < dataSet.length; q++) {
                 SetDataSet(q);
-                gradientNum++;
                 System.out.println("sets");
-                double errorDiff = desiredOutput[desiredOutput.length - 1] - neuronValues[finalLayer][0];
+                double errorDiff = -desiredOutput[desiredOutput.length - 1] + neuronValues[finalLayer][0];
                 System.out.println(" error dif " + errorDiff);
-                for (int i = 0; i < hiddenLayers.length; i++) // iterate layers
 
-                {
+                CalculateNeuron();
 
-                    PrintWeights();
-                    PrintValues();
-                    System.out.println("layers");
-
-                    CalculateSum(i + 1);
-
-                    PrintValues();
-
-                    for (int j = 0; j < hiddenLayers[i].length - 1/*exclude bias*/; j++) { //iterate neurons
-                        //error
-                        double nDelta = -errorDiff * SigmoidDeriv(neuronValues[i + 1][j]);
-                        System.out.println(i + " layer" + j + " neuron " + nDelta + " ndelta");
-                        for (int k = 0; k < hiddenLayers[i][j].length; k++) { // bias excluded but needs to be included
-
-                            System.out.println(k + " weight index");
-                            double arrowOutput = neuronValues[i][k]; // k gives source node
-                            System.out.println(arrowOutput + " arrowOutput");
-                            double gradient = nDelta * arrowOutput;
-                            System.out.println(gradient + " gradientTemp");
-                            //GRADIENT AVG SHOULD BE AVERAGE BETWEEN DATA SETS NOT AVERAGE OF ALL IN A DATA SET
-                            gradients[i][j][k] += gradient;
-                            // hiddenLayers[i][j][k] =             
-                        }
-                        gradients[i][j + 1][0] += 1 * nDelta;// include bias
-
-                    }
-                    CalculateLayer(i + 1); //calculate this layer for next layer prep
+                //calculate ndelta of single output node
+                nDeltas[finalLayer][0] = -errorDiff * SigmoidDeriv(sums[finalLayer][0]);
+                //calculate ndeltas of single hidden layer
+                for (int c = 0; c < hiddenLayers[0].length; c++) {
+                    nDeltas[1][c] = SigmoidDeriv(sums[1][c]) * nDeltas[finalLayer][0] * hiddenLayers[0][c][0];
                 }
-            }
-            //  gradientAvg = gradientAvg / gradientNum;
-            // double weightDelta = learnRate * gradientAvg + prevAvg * momentum;
-            for (int i = 0; i < hiddenLayers.length; i++) {
-                for (int j = 0; j < hiddenLayers[i].length; j++) {
+                //iterate through all weights and find gradient, and save it for later;
+                for (int i = 0; i < hiddenLayers.length; i++) {
+                    for (int j = 0; j < hiddenLayers[i].length; j++) {
+                        for (int k = 0; k < hiddenLayers[i][j].length; k++) {
+                        
 
-                    for (int k = 0; k < hiddenLayers[i][j].length; k++) {
+                        }
 
-                        double change = learnRate * gradients[i][j][k] + prevChange[i][j][k] * momentum;
-                        hiddenLayers[i][j][k] += change;
-                        prevChange[i][j][k] = change;
                     }
+
                 }
             }
             error = CalculateSumError();
@@ -199,14 +174,14 @@ public class Network {
     private void CalculateLayer(int i) {
         CalculateSum((i));
         for (int j = 0; j < neuronValues[i].length; j++) {
-            neuronValues[i][j] = Main.SigmoidSquish(neuronValues[i][j]);
+            neuronValues[i][j] = Main.SigmoidSquish(sums[i][j]);
         }
 
 
     }
 
     public void CalculateSum(int i) {
-        neuronValues[i] = Main.matrixMult(hiddenLayers[i - 1], neuronValues[i - 1]);
+        sums[i] = Main.matrixMult(hiddenLayers[i - 1], neuronValues[i - 1]);
 
     }
 
