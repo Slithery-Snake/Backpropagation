@@ -52,14 +52,14 @@ public class Network {
                 hiddenLayers[i - 1][j] = new Weight[neuronValues[i-1].length]; // how many weights plus extra for bias
                 for (int k = 0; k < hiddenLayers[i-1][j].length; k++) // give random weights for all neuron and bias weightsq
                 {    hiddenLayers[i - 1][j][k] = new Weight();
-                    hiddenLayers[i - 1][j][k].value = -10.0 + (Math.random() * ((20.0)));
+                    hiddenLayers[i - 1][j][k].value = -5.0 + (Math.random() * ((10.0)));
                 }
 
 
             }
             for(int l = 0; l < hiddenLayers[i-1][neuronValues[i].length].length;l++) {
                 hiddenLayers[i-1][neuronValues[i].length][l] = new Weight();
-                hiddenLayers[i-1][neuronValues[i].length][l].value = -10.0 + (Math.random() * ((20.0)));
+                hiddenLayers[i-1][neuronValues[i].length][l].value = -5.0 + (Math.random() * ((10.0)));
                 }
 
           //  hiddenLayers[i - 1][neuronValues[i].length][0] = -10.0 + (Math.random() * ((20.0)));
@@ -166,7 +166,7 @@ public class Network {
 
         System.out.println(("hel"));
 
-       //  while (error > 0.1)
+         while (error > 0.05)
         {   //wipe gradients
             GradientWipe();
 
@@ -187,25 +187,32 @@ public class Network {
                 neuronValues[finalLayer][0].nDelta = -errorDiff * SigmoidDeriv(neuronValues[finalLayer][0].sum);
                 //calculate ndeltas of single hidden layer
                 for (int c = 0; c < hiddenLayers[0].length-1; c++) //exclude bias
-                {
-                    neuronValues[1][c].nDelta = SigmoidDeriv(neuronValues[1][c].sum) * neuronValues[finalLayer][0].nDelta * hiddenLayers[1][c][0].value;
+                {   //issue
+
+
+                    neuronValues[1][c].nDelta = SigmoidDeriv(neuronValues[1][c].sum) * neuronValues[finalLayer][0].nDelta * hiddenLayers[1][0][c].value; //issue here //RESOLVED
                 }
                // System.out.println(Arrays.deepToString(nDeltas));
-                ; // neuron is becoming ndelta for some reaosn
-                //iterate through all weights and find gradient, and save it for later; issue REMOVE ALL CLONING AND IT WILL WORK
+                //iterate through all weights and find gradient, and save it for later; issue
                 for (int i = 0; i < hiddenLayers.length; i++) {
                     for (int j = 0; j < hiddenLayers[i].length - 1; j++) { //exlude bias
                         for (int k = 0; k < hiddenLayers[i][j].length; k++) {
                            double gradient = neuronValues[i + 1][j].nDelta * neuronValues[i][k].value;
 
-
-                            hiddenLayers[i][j][k].gradient += gradient;
+                            System.out.println(gradient+ "  gradient");
+                            double change =  learnRate*gradient + momentum*hiddenLayers[i][j][k].prevChange;
+                            hiddenLayers[i][j][k].prevChange = change;
+                            hiddenLayers[i][j][k].value += change;
                         }
 
                     }
                     for(int l = 0; l < hiddenLayers[i][hiddenLayers[i].length-1].length;l++) {
-                        hiddenLayers[i][hiddenLayers[i].length-1][l].gradient+= neuronValues[i+1][l].nDelta;
-
+                        int index = hiddenLayers[i].length-1;
+                        double gradient = neuronValues[i+1][l].nDelta;
+                        double change =  learnRate*gradient + momentum*hiddenLayers[i][index][l].prevChange;
+                        hiddenLayers[i][index][l].prevChange = change;
+                        hiddenLayers[i][index][l].value += change;
+                        System.out.println(neuronValues[i+1][l].nDelta + " bias gradient");
                     }
 
                 }
@@ -216,9 +223,10 @@ public class Network {
 
             }
             //iterate through all weights again and use sum gradients to change
-
-            for (int i = 0; i < hiddenLayers.length; i++) {
-                for (int j = 0; j < hiddenLayers[i].length - 1; j++) { //exlude bias
+            PrintValues();
+            PrintWeights();
+         /*   for (int i = 0; i < hiddenLayers.length; i++) {
+                for (int j = 0; j < hiddenLayers[i].length ; j++) {
                     for (int k = 0; k < hiddenLayers[i][j].length; k++) {
                        double change =  learnRate*hiddenLayers[i][j][k].gradient + momentum*hiddenLayers[i][j][k].prevChange;
                         hiddenLayers[i][j][k].value += change;
@@ -226,11 +234,16 @@ public class Network {
                     }
 
                 }
-            }
+            }*/
             error = CalculateSumError();
         }
-         PrintWeights();
-         PrintValues();
+         System.out.println("SUCCESS");
+        for(int y =0; y < dataSet.length; y++) {
+            SetDataSet(y);
+            CalculateNeuron();
+            PrintWeights();
+            PrintValues();
+        }
 
 
     }

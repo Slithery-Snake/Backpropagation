@@ -15,7 +15,7 @@ network.PrintValues();*/
 
         network = new Network(new double[]{0.0, 1.0}, new double[]{1.0},
                 new int[]{2}, new double[][][]{ /**/{{1, 1}, {0}},/**/{{0, 0}, {0}},/**/ {{1, 0}, {1}},/**/ {{0, 1}, {1}}});
-       network.BackProp(0.8, 0.3);
+       network.BackProp(2, 0.1);
       //gg network.Test();
 
 
