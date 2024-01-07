@@ -52,19 +52,29 @@ public class Network {
                 hiddenLayers[i - 1][j] = new Weight[neuronValues[i-1].length]; // how many weights plus extra for bias
                 for (int k = 0; k < hiddenLayers[i-1][j].length; k++) // give random weights for all neuron and bias weightsq
                 {    hiddenLayers[i - 1][j][k] = new Weight();
-                    hiddenLayers[i - 1][j][k].value = -5.0 + (Math.random() * ((10.0)));
+                    hiddenLayers[i - 1][j][k].value = -1.0 + (Math.random() * ((1)));
                 }
 
 
             }
             for(int l = 0; l < hiddenLayers[i-1][neuronValues[i].length].length;l++) {
                 hiddenLayers[i-1][neuronValues[i].length][l] = new Weight();
-                hiddenLayers[i-1][neuronValues[i].length][l].value = -5.0 + (Math.random() * ((10.0)));
+                hiddenLayers[i-1][neuronValues[i].length][l].value = -1.0 + (Math.random() * ((1)));
                 }
 
-          //  hiddenLayers[i - 1][neuronValues[i].length][0] = -10.0 + (Math.random() * ((20.0)));
+           // hiddenLayers[i - 1][neuronValues[i].length][0].value = -1 + (Math.random() * ((1)));
 
         }
+       hiddenLayers[0][0][0].value = 0.4499316768824926;
+        hiddenLayers[0][0][1].value = 0.2000219309235265;
+        hiddenLayers[0][1][0].value =  0.6946893343458524;
+        hiddenLayers[0][1][1].value = 0.9263991839190988;
+        hiddenLayers[0][2][0].value =   -0.19668593888671482;
+        hiddenLayers[0][2][1].value =  -0.1651258602709167;
+        hiddenLayers[1][0][0].value =   -0.7085279753395994;
+        hiddenLayers[1][0][1].value =  0.9428798036800872;
+        hiddenLayers[1][1][0].value =  -0.12797389893887257;
+
     }
 
     public Network(Weight[][][] hiddenLayers, double[] input) {
